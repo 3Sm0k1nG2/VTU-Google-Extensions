@@ -9,10 +9,6 @@ injector();
 // divElement.append(newBtnElement);
 // newBtnElement.addEventListener('click', injector());
 
-function getCurrentSeason(){
-
-}
-
 function injector() {
     //alert("It works!");
 
