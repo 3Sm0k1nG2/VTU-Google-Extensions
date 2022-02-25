@@ -127,11 +127,7 @@ function getSemesterSeason() {
         console.log(`${semester.start.month} <= ${month} <= ${semester.end.month}`);
         console.log(`${semester.start.day} <= ${day} <= ${semester.end.day}`);
 
-<<<<<<< HEAD
         if ((semester.start.month <= month && month <= semester.end.month) && (semester.start.day <= day && day <= semester.end.day))
-=======
-        if ((semester.start.month <= month && month <= semester.end.month) && (semester.start.day <= day && day <= semester.end.day)){}
->>>>>>> b6a09fada7c85d7965e10ee862b2f3b029b123ac
             return semesterName;
     }
 
