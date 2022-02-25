@@ -4,22 +4,11 @@ let selectElement = document.getElementById('ctl00_ContentPlaceHolder2_dd_zl');
 let isLoaded = selectElement.options.selectedIndex === 1;
 injector();
 
-<<<<<<< HEAD
-
-=======
->>>>>>> b6a09fada7c85d7965e10ee862b2f3b029b123ac
 // let newBtnElement = document.createElement('button');
 // const divElement = document.getElementById('ctl00_ContentPlaceHolder2_Panel7').children[0];
 // divElement.append(newBtnElement);
 // newBtnElement.addEventListener('click', injector());
 
-<<<<<<< HEAD
-=======
-function getCurrentSeason(){
-
-}
-
->>>>>>> b6a09fada7c85d7965e10ee862b2f3b029b123ac
 function injector() {
     //alert("It works!");
 
@@ -146,11 +135,6 @@ function setSemesterSeason(season) {
     if(isLoaded)
         return;
     
-<<<<<<< HEAD
     isLoaded = true;
     selectElement.dispatchEvent(onchangeEvent);
-=======
-    selectElement.dispatchEvent(onchangeEvent);
-    isLoaded = true;
->>>>>>> b6a09fada7c85d7965e10ee862b2f3b029b123ac
 }
