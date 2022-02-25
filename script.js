@@ -4,6 +4,7 @@ let selectElement = document.getElementById('ctl00_ContentPlaceHolder2_dd_zl');
 let isLoaded = selectElement.options.selectedIndex === 1;
 injector();
 
+
 // let newBtnElement = document.createElement('button');
 // const divElement = document.getElementById('ctl00_ContentPlaceHolder2_Panel7').children[0];
 // divElement.append(newBtnElement);
@@ -116,7 +117,7 @@ function getSemesterSeason() {
         console.log(`${semester.start.month} <= ${month} <= ${semester.end.month}`);
         console.log(`${semester.start.day} <= ${day} <= ${semester.end.day}`);
 
-        if ((semester.start.month <= month && month <= semester.end.month) && (semester.start.day <= day && day <= semester.end.day)){}
+        if ((semester.start.month <= month && month <= semester.end.month) && (semester.start.day <= day && day <= semester.end.day))
             return semesterName;
     }
 
@@ -135,6 +136,6 @@ function setSemesterSeason(season) {
     if(isLoaded)
         return;
     
-    selectElement.dispatchEvent(onchangeEvent);
     isLoaded = true;
+    selectElement.dispatchEvent(onchangeEvent);
 }
