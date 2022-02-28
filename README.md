@@ -1,3 +1,8 @@
 # Filter-subjects-by-class
 
-Extension script to help me filter the subjects that I have from the rest.
+TODO:
+  1. Auto change season - DONE
+  2. Add select 'лаб' - DONE
+  3. Add select 'сем' - DONE
+
+Extension script that filters subjects by class groups and week.

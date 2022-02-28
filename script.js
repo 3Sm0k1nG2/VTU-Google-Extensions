@@ -66,13 +66,6 @@ function createChooseSemSelect() {
 
 
 function injector() {
-    //alert("It works!");
-
-    // TODO:
-    // 1. Auto change season - DONE
-    // 2. Add select 'лаб' - DONE
-    // 3. Add select 'сем' - DONE
-
     let semesterSeason = getSemesterSeason();
     setSemesterSeason(semesterSeason);
 
