@@ -1,9 +1,11 @@
+const trSelector = 'fieldset table>tbody>tr';
+const tdSelector = trSelector + '>td:nth-of-type(4)';
+
 let selectElement = document.getElementById('ctl00_ContentPlaceHolder2_dd_zl');
 
 // 1 = summer, 0 = winter | current season is summer, so we write 1. No idea how to automate this proccess
 let isLoaded = selectElement.options.selectedIndex === 1;
 injector();
-
 
 function createAndAppendNewButtons() {
     appendButtonToDiv(createChooseLabSelect());
@@ -34,7 +36,7 @@ function createChooseLabSelect() {
     return newSelectElement;
 }
 
-function appendButtonToDiv(buttonElement){
+function appendButtonToDiv(buttonElement) {
     const divElement = document.getElementById('ctl00_ContentPlaceHolder2_Panel7').children[0];
 
     let lastChildElement = divElement.children[divElement.children.length - 1];
@@ -47,7 +49,7 @@ function createChooseSemSelect() {
     const newSelectElement = document.createElement('select');
     newSelectElement.id = 'sem-btn';
     newSelectElement.hidden = true;
-    
+
     for (let i = 1; i <= 2; i++) {
         let newOptionElement = document.createElement('option');
         newSelectElement.appendChild(newOptionElement);
@@ -58,7 +60,7 @@ function createChooseSemSelect() {
     newSelectElement.addEventListener('change', (e) => {
         console.log(document.getElementById('lab-btn'));
         console.log(e.target.options.selectedIndex + 1);
-        filterSubjects(document.getElementById('lab-btn').options.selectedIndex+1, e.target.options.selectedIndex + 1);
+        filterSubjects(document.getElementById('lab-btn').options.selectedIndex + 1, e.target.options.selectedIndex + 1);
     })
 
     return newSelectElement;
@@ -70,11 +72,12 @@ function injector() {
     setSemesterSeason(semesterSeason);
 
     filterSubjects();
+    changeSchoolSubject(3, 1, '14.15-16.00');
 
     createAndAppendNewButtons();
 };
 
-function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem()){
+function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem()) {
     let filteredSubjects = getFilterSubjectsByGroup(groupNumberLab, groupNumberSem);
     filteredSubjects = Array.from(filteredSubjects).map((td) => td.parentElement);
 
@@ -82,11 +85,10 @@ function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = g
     changeBGColor(filteredSubjects, 'gold');
 }
 
-function clearBGColor(){
+function clearBGColor() {
     const DEFAULT_COLOR = 'white';
-    const selector = 'tr>td:nth-of-type(4)';
-    let elements = document.querySelectorAll(selector);
-    elements = Array.from(elements).map( (el) => el.parentElement);
+    let elements = document.querySelectorAll(tdSelector);
+    elements = Array.from(elements).map((el) => el.parentElement);
 
     elements.forEach((el) => {
         el.style.backgroundColor = DEFAULT_COLOR;
@@ -108,8 +110,7 @@ function getFilterSubjectsByGroup(groupNumberLab = getGroupNumberLab(), groupNum
         case 3: groupNumberSem = 2; break;
     }
 
-    const selector = 'tr>td:nth-of-type(4)';
-    let tdElements = document.querySelectorAll(selector);
+    let tdElements = document.querySelectorAll(tdSelector);
 
     return Array.from(tdElements).filter((td) => td.innerHTML === '&nbsp;'
         || td.innerText === groupNumberLab + ' лаб'
@@ -169,12 +170,12 @@ function getSemesterSeason() {
         if (month > semester.start.month && month < semester.end.month)
             return semesterName;
 
-        if(month === semester.start.month)
-            if(day >= semester.start.day)
+        if (month === semester.start.month)
+            if (day >= semester.start.day)
                 return semesterName;
 
-        if(month === semester.end.month)
-            if(day <= semester.end.day)
+        if (month === semester.end.month)
+            if (day <= semester.end.day)
                 return semesterName;
     }
 
@@ -195,4 +196,10 @@ function setSemesterSeason(season) {
 
     isLoaded = true;
     selectElement.dispatchEvent(onchangeEvent);
+}
+
+function changeSchoolSubject(rowId, cellId, newData) {
+    const trElement = document.querySelector(`${trSelector}:nth-of-type(${rowId + 1})`);
+
+    trElement.cells[cellId].textContent = newData;
 }
