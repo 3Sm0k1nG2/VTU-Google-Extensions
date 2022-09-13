@@ -1,11 +1,27 @@
+// May be changed later
+const SEMESTER_PANEL_ID = 'ContentPlaceHolder2_Panel7';
+const SEMESTER_BUTTON_ID = 'ContentPlaceHolder2_dd_zl';
+const STUDENT_GROUP_LABEL_ID = 'fv_studinfo_grupaLabel';
+const STUDENT_FACULTY_NUMBER_ID = 'fv_studinfo_fnLabel';
+const FACULTY_NUMBER_THRESHOLD = 2109011056;
+
+const WINTER = 'winter';
+const DEFAULT_COLOR = 'white';
+const SELECT_COLOR = 'gold';
+
 const trSelector = 'fieldset table>tbody>tr';
 const tdSelector = trSelector + '>td:nth-of-type(4)';
 
-let selectElement = document.getElementById('ctl00_ContentPlaceHolder2_dd_zl');
+let selectElement = document.getElementById(SEMESTER_BUTTON_ID);
 
 // 1 = summer, 0 = winter | current season is summer, so we write 1. No idea how to automate this proccess
-let isLoaded = selectElement.options.selectedIndex === 1;
+console.warn(  'Automatic change of season in not implemented yet.\n'
+                ,'When next semester starts, the dev must update the value of \'isLoaded\'.');
+let isLoaded = selectElement.options.selectedIndex === 0;
+
 injector();
+
+// Functions
 
 function createAndAppendNewButtons() {
     appendButtonToDiv(createChooseLabSelect());
@@ -37,7 +53,7 @@ function createChooseLabSelect() {
 }
 
 function appendButtonToDiv(buttonElement) {
-    const divElement = document.getElementById('ctl00_ContentPlaceHolder2_Panel7').children[0];
+    const divElement = document.getElementById(SEMESTER_PANEL_ID).children[0];
 
     let lastChildElement = divElement.children[divElement.children.length - 1];
     divElement.appendChild(buttonElement);
@@ -58,8 +74,8 @@ function createChooseSemSelect() {
     }
 
     newSelectElement.addEventListener('change', (e) => {
-        console.log(document.getElementById('lab-btn'));
-        console.log(e.target.options.selectedIndex + 1);
+        // console.log(document.getElementById('lab-btn'));
+        // console.log(e.target.options.selectedIndex + 1);
         filterSubjects(document.getElementById('lab-btn').options.selectedIndex + 1, e.target.options.selectedIndex + 1);
     })
 
@@ -68,11 +84,12 @@ function createChooseSemSelect() {
 
 
 function injector() {
-    let semesterSeason = getSemesterSeason();
-    setSemesterSeason(semesterSeason);
+    // sets semester automatically, prone to bugs
+    // let semesterSeason = getSemesterSeason();
+    // setSemesterSeason(semesterSeason);
 
     filterSubjects();
-    changeSchoolSubject(3, 1, '14.15-16.00');
+    // changeSchoolSubject(3, 1, '14.15-16.00');
 
     createAndAppendNewButtons();
 };
@@ -82,11 +99,10 @@ function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = g
     filteredSubjects = Array.from(filteredSubjects).map((td) => td.parentElement);
 
     clearBGColor();
-    changeBGColor(filteredSubjects, 'gold');
+    changeBGColor(filteredSubjects, SELECT_COLOR);
 }
 
 function clearBGColor() {
-    const DEFAULT_COLOR = 'white';
     let elements = document.querySelectorAll(tdSelector);
     elements = Array.from(elements).map((el) => el.parentElement);
 
@@ -118,15 +134,15 @@ function getFilterSubjectsByGroup(groupNumberLab = getGroupNumberLab(), groupNum
 }
 
 function getFacultyNumber() {
-    return Number(document.getElementById('ctl00_fv_studinfo_fnLabel').textContent);
+
+    return Number(document.getElementById(STUDENT_FACULTY_NUMBER_ID).textContent);
 }
 
 function getGroupNumberLab() {
-    return Number(document.getElementById('ctl00_fv_studinfo_grupaLabel').textContent);
+    return Number(document.getElementById(STUDENT_GROUP_LABEL_ID).textContent);
 }
 
 function getGroupNumberSem(groupNumberSem) {
-    const FACULTY_NUMBER_THRESHOLD = 2109011056;
     const facultyNumber = getFacultyNumber();
 
     return groupNumberSem || (facultyNumber <= FACULTY_NUMBER_THRESHOLD ? 1 : 2);
@@ -144,7 +160,7 @@ function getSemesterSeason() {
         // {day}.{month}
         winter: {
             start: {
-                day: 27,
+                day: 12,
                 month: 9
             },
             end: {
@@ -179,24 +195,22 @@ function getSemesterSeason() {
                 return semesterName;
     }
 
-    throw new Error('Could not get semester season.');
+    // First check semesters ranges. Today may be out of bounds.
+    throw new Error(`Could not get semester season. Today is not in semester range.`);
 }
 
-function setSemesterSeason(season) {
+// function setSemesterSeason(season) {
+//     const selectElement = document.getElementById(SEMESTER_BUTTON_ID);
+//     const onchangeEvent = new Event('change', {});
 
-    const WINTER = 'winter';
+//     selectElement.options.selectedIndex = season === WINTER ? 0 : 1;
 
-    const selectElement = document.getElementById('ctl00_ContentPlaceHolder2_dd_zl');
-    const onchangeEvent = new Event('change', {});
+//     if (isLoaded)
+//         return;
 
-    selectElement.options.selectedIndex = season === WINTER ? 0 : 1;
-
-    if (isLoaded)
-        return;
-
-    isLoaded = true;
-    selectElement.dispatchEvent(onchangeEvent);
-}
+//     isLoaded = true;
+//     selectElement.dispatchEvent(onchangeEvent);
+// }
 
 function changeSchoolSubject(rowId, cellId, newData) {
     const trElement = document.querySelector(`${trSelector}:nth-of-type(${rowId + 1})`);
