@@ -10,22 +10,77 @@ const DEFAULT_COLOR = 'white';
 const SELECT_COLOR = 'gold';
 
 const trSelector = 'fieldset table>tbody>tr';
-const tdSelector = trSelector + '>td:nth-of-type(4)';
+const tdSelector = trSelector + '>td:nth-of-type(n+3):nth-of-type(-n+4)';
 
 let selectElement = document.getElementById(SEMESTER_BUTTON_ID);
 
 // 1 = summer, 0 = winter | current season is summer, so we write 1. No idea how to automate this proccess
-console.warn(  'Automatic change of season in not implemented yet.\n'
-                ,'When next semester starts, the dev must update the value of \'isLoaded\'.');
+console.warn('Automatic change of season in not implemented yet.\n'
+    , 'When next semester starts, the dev must update the value of \'isLoaded\'.');
 let isLoaded = selectElement.options.selectedIndex === 0;
 
 injector();
 
 // Functions
 
+function injector() {
+    // sets semester automatically, prone to bugs
+    // let semesterSeason = getSemesterSeason();
+    // setSemesterSeason(semesterSeason);
+
+    filterSubjects();
+    // changeSchoolSubject(3, 1, '14.15-16.00');
+
+    createAndAppendNewButtons();
+};
+
+function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem(), weekNumber = getWeekNumber()) {
+    let filteredSubjects = getFilterSubjectsByGroup(groupNumberLab, groupNumberSem, weekNumber);
+    filteredSubjects = Array.from(filteredSubjects).map((td) => td.parentElement);
+
+    clearBGColor();
+    changeBGColor(filteredSubjects, SELECT_COLOR);
+}
+
 function createAndAppendNewButtons() {
     appendButtonToDiv(createChooseLabSelect());
     appendButtonToDiv(createChooseSemSelect());
+    appendButtonToDiv(createChooseWeekSelect());
+}
+
+function appendButtonToDiv(buttonElement) {
+    console.log(buttonElement);
+    const divElement = document.getElementById(SEMESTER_PANEL_ID).children[0];
+
+    let lastChildElement = divElement.children[divElement.children.length - 1];
+    divElement.appendChild(buttonElement);
+    divElement.appendChild(lastChildElement);
+}
+
+function createChooseWeekSelect() {
+    const newSelectElement = document.createElement('select');
+    newSelectElement.id = 'week-btn';
+
+    let newOptionElement = document.createElement('option');
+    newSelectElement.appendChild(newOptionElement);
+    newOptionElement.value = 'odd';
+    newOptionElement.textContent = '1,3 седмица';
+
+    newOptionElement = document.createElement('option');
+    newSelectElement.appendChild(newOptionElement);
+    newOptionElement.value = 'even';
+    newOptionElement.textContent = '2,4 седмица';
+
+    newSelectElement.selectedIndex = getWeekNumber() % 2;
+    console.log((getWeekNumber() + 1) % 2);
+
+    newSelectElement.addEventListener('change', (e) => {
+        filterSubjects(document.getElementById('lab-btn').options.selectedIndex + 1
+            , document.getElementById('sem-btn').options.selectedIndex + 1
+            , e.target.options.selectedIndex);
+    });
+
+    return newSelectElement;
 }
 
 function createChooseLabSelect() {
@@ -52,14 +107,6 @@ function createChooseLabSelect() {
     return newSelectElement;
 }
 
-function appendButtonToDiv(buttonElement) {
-    const divElement = document.getElementById(SEMESTER_PANEL_ID).children[0];
-
-    let lastChildElement = divElement.children[divElement.children.length - 1];
-    divElement.appendChild(buttonElement);
-    divElement.appendChild(lastChildElement);
-}
-
 function createChooseSemSelect() {
 
     const newSelectElement = document.createElement('select');
@@ -82,26 +129,6 @@ function createChooseSemSelect() {
     return newSelectElement;
 }
 
-
-function injector() {
-    // sets semester automatically, prone to bugs
-    // let semesterSeason = getSemesterSeason();
-    // setSemesterSeason(semesterSeason);
-
-    filterSubjects();
-    // changeSchoolSubject(3, 1, '14.15-16.00');
-
-    createAndAppendNewButtons();
-};
-
-function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem()) {
-    let filteredSubjects = getFilterSubjectsByGroup(groupNumberLab, groupNumberSem);
-    filteredSubjects = Array.from(filteredSubjects).map((td) => td.parentElement);
-
-    clearBGColor();
-    changeBGColor(filteredSubjects, SELECT_COLOR);
-}
-
 function clearBGColor() {
     let elements = document.querySelectorAll(tdSelector);
     elements = Array.from(elements).map((el) => el.parentElement);
@@ -117,7 +144,7 @@ function changeBGColor(elements, color) {
     });
 }
 
-function getFilterSubjectsByGroup(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem()) {
+function getFilterSubjectsByGroup(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem(), weekNumber = getWeekNumber()) {
     if (!(groupNumberLab >= 1 && groupNumberLab <= 3))
         throw new Error('Wrong parameters received.\n groupNumberLab should be (>= 1 && <= 3), groupNumberSem should be (1 || 2)');
 
@@ -128,9 +155,30 @@ function getFilterSubjectsByGroup(groupNumberLab = getGroupNumberLab(), groupNum
 
     let tdElements = document.querySelectorAll(tdSelector);
 
-    return Array.from(tdElements).filter((td) => td.innerHTML === '&nbsp;'
-        || td.innerText === groupNumberLab + ' лаб'
-        || td.innerText === groupNumberSem + ' сем');
+    console.log(tdElements);
+    console.log(weekNumber);
+    console.log(weekNumber % 2 ? '2,4' : '1,3');
+
+    // Filter by Group
+    const filteredSubjects = Array.from(tdElements)
+        .filter((td) =>
+            td.innerHTML === '&nbsp;'
+            || td.innerText === groupNumberLab + ' лаб'
+            || td.innerText === groupNumberSem + ' сем'
+        );
+
+    // Filter by Week
+    return filteredSubjects.filter((td) => {
+        console.log('--------------------------------');
+        console.dir(td);
+        console.dir(td.previousElementSibling);
+        console.log(td.previousElementSibling.innerText === 'всяка'
+            || td.previousElementSibling.innerText === (weekNumber % 2 ? '2,4' : '1,3'))
+        console.log('--------------------------------');
+
+        return td.previousElementSibling.innerText === 'всяка'
+            || td.previousElementSibling.innerText === (weekNumber % 2 ? '2,4' : '1,3')
+    });
 }
 
 function getFacultyNumber() {
@@ -199,6 +247,40 @@ function getSemesterSeason() {
     throw new Error(`Could not get semester season. Today is not in semester range.`);
 }
 
+function getWeekNumber() {
+    // Not sure if needed, if not - remove consts
+    const THURSDAY_NUMBER = 4;
+    const SUNDAY_NUMBER = 0;
+
+    // Do NOT DELETE
+    let currentdate = new Date();
+
+    // Debugging correct date, remove following code after fix
+    console.log('DATE_FULL: ' + currentdate.toString())
+    console.log('DATE: ' + currentdate.getDate());
+    currentdate.setDate(currentdate.getDate() + 5);
+    console.log('DATE: ' + currentdate.getDate());
+    console.log('DATE_FULL: ' + currentdate.toString())
+
+    // Do NOT DELETE
+    let oneJan = new Date(currentdate.getFullYear(), 0, 1);
+    let days = Math.floor((currentdate - oneJan) / (24 * 60 * 60 * 1000)); // day = hours * minutes * seconds * miliseconds
+    let weekNumber = Math.ceil(days / 7);
+
+    // Week does not respond to date number
+    // Jan in 2022 starts in 6 (Saturday) => Day > 0 && Day < 4  => week is 52, instead of 1, because staring day is lower than the previous month days in that week.
+    let oneJanWeekDayNumber = oneJan.getDay();
+    // if(oneJanWeekDayNumber < THURSDAY_NUMBER && oneJanWeekDayNumber !== SUNDAY_NUMBER) // 4 stands for Thursday, 0 stands for Sunday
+    //     weekNumber--;
+
+    // Debugging correct date, remove following code after fix
+    console.log('onejan: ' + oneJan);
+    console.log('Number Of days: ' + days);
+    console.log('WEEK: ' + weekNumber);
+
+    return weekNumber;
+}
+
 // function setSemesterSeason(season) {
 //     const selectElement = document.getElementById(SEMESTER_BUTTON_ID);
 //     const onchangeEvent = new Event('change', {});
@@ -212,8 +294,8 @@ function getSemesterSeason() {
 //     selectElement.dispatchEvent(onchangeEvent);
 // }
 
-function changeSchoolSubject(rowId, cellId, newData) {
-    const trElement = document.querySelector(`${trSelector}:nth-of-type(${rowId + 1})`);
+// function changeSchoolSubject(rowId, cellId, newData) {
+//     const trElement = document.querySelector(`${trSelector}:nth-of-type(${rowId + 1})`);
 
-    trElement.cells[cellId].textContent = newData;
-}
+//     trElement.cells[cellId].textContent = newData;
+// }
