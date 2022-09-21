@@ -1,8 +1,8 @@
 {
     "name": "est.uni-vt.bg Filtering Extension",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "manifest_version": 3,
-    "description": "START| 11:42AM 23-Feb-2022",
+    "description": "START| 11:42AM 23-Feb-2022\nUPDATE| 10:20PM 21-Sep-2022",
     "content_scripts": [
         {
             "js": ["script.js"],
