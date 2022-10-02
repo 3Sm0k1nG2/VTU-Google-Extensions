@@ -231,7 +231,7 @@ function getSemesterSeason() {
     for (let semesterName in semesters) {
         semester = semesters[semesterName];
 
-        if (month > semester.start.month && month < semester.end.month)
+        if (month > semester.start.month || month < semester.end.month)
             return semesterName;
 
         if (month === semester.start.month)
