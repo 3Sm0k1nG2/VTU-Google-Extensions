@@ -1,11 +1,11 @@
 {
     "name": "est.uni-vt.bg Filtering Extension",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "manifest_version": 3,
-    "description": "START| 11:42AM 23-Feb-2022\nUPDATE| 10:20PM 21-Sep-2022",
+    "description": "START| 11:42AM 23-Feb-2022\nUPDATE| 10:20PM 21-Sep-2022\nUPDATE| 09:36:20PM 28-Sep-2023",
     "content_scripts": [
         {
-            "js": ["script.js"],
+            "js": ["FilterSubjectsByClass.js"],
             "matches": ["*://est.uni-vt.bg/student/spr/grzan.aspx"]
         }
     ]
