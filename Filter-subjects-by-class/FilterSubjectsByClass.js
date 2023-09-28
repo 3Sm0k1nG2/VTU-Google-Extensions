@@ -1,41 +1,86 @@
-// Constants
+// Constants HTML
 
-// Basic user information (may be changed later)
+//// Basic user information (may be changed later)
 const SEMESTER_PANEL_ID = 'ContentPlaceHolder2_Panel7';
 const SEMESTER_BUTTON_ID = 'ContentPlaceHolder2_dd_zl';
 const STUDENT_GROUP_LABEL_ID = 'fv_studinfo_grupaLabel';
 const STUDENT_FACULTY_NUMBER_ID = 'fv_studinfo_fnLabel';
 const FACULTY_NUMBER_THRESHOLD = 2109011056;
 
-// Table colors
+//// Table colors
 const WINTER = 'winter';
 const DEFAULT_COLOR = 'white';
 const SELECT_COLOR = 'gold';
 
-// Table record selectors
+//// Table record selectors
 const trSelector = 'fieldset table>tbody>tr';
 const tdSelector = trSelector + '>td:nth-of-type(n+3):nth-of-type(-n+4)';
 
-// HTML Selects (may be changed later)
+//// HTML Selects (may be changed later)
 const SEASON_SELECT_ID = 'ContentPlaceHolder2_dd_zl';
 // Injected HTML Selects
 const LAB_SELECT_ID = 'lab-btn';
 const SEM_SELECT_ID = 'sem-btn';
 const WEEK_SELECT_ID = 'week-btn';
 
-// Semester Seasons
-const WINTER_INDEX = 0;
-const SUMMER_INDEX = 1;
-
-// Window loading
+//// Window loading
 const DOCUMENT_READY_STATE_IS_LOADING = 'loading';
 
-// getWeekNumber()
+// Constants Function 
+
+//// getIsWeekNumberEven()
 const SUNDAY_DATE_NUMBER = 0;
 const SUNDAY_NUMBER = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000; // hours, minutes, seconds, miliseconds 
 
+//// getFilteredSubjects()
+const ALL_GROUPS_SELECT_TEXT = '&nbsp;';
+const LAB_GROUP_SELECT_TEXT = 'лаб';
+const SEM_GROUP_SELECT_TEXT = 'сем';
+const ALL_WEEKS_SELECT_TEXT = 'всяка';
+const ODD_WEEK_SELECT_TEXT = '1,3';
+const EVEN_WEEK_SELECT_TEXT = '2,4';
+
+// Constants 
+
+const WINTER_SEMESTER_KEY = 'winter';
+const SUMMER_SEMESTER_KEY = 'summer';
+
+/*
+Semesters
+ Winter semester 19.09 - 07.02
+ Summer semester 20.02 - 03.06
+ {day}.{month}
+// Set ranges to have offset one week in start_date and end_date
+*/
+const SEMESTERS = {
+    [WINTER_SEMESTER_KEY]: {
+        start: {
+            day: 12,
+            month: 9
+        },
+        end: {
+            day: 13,
+            month: 2
+        }
+    },
+    [SUMMER_SEMESTER_KEY]: {
+        start: {
+            day: 14,
+            month: 2
+        },
+        end: {
+            day: 9,
+            month: 6
+        }
+    }
+}
+
+const TODAY_AS_DATE = new Date();
+const INVERT_WEEK_NUMBER_RESULT = true;
+
 // Main
+// debugger;
 updateSeason();
 
 createAndAppendNewSelectElements();
@@ -63,7 +108,7 @@ function appendElementToDiv(buttonElement) {
 
 function updateSeason(){
     const seasonElement = document.getElementById(SEASON_SELECT_ID);
-    const semesterSeasonIndex = Number(getSemesterSeason());
+    const semesterSeasonIndex = getSemesterSeason(TODAY_AS_DATE) === WINTER_SEMESTER_KEY ? 0 : 1;
 
     if(seasonElement.selectedIndex == semesterSeasonIndex)
         return;
@@ -72,8 +117,8 @@ function updateSeason(){
     seasonElement.dispatchEvent(new Event('change'));
 }
 
-function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem(), weekNumber = getWeekNumber()) {
-    let filteredSubjects = getFilteredSubjects(groupNumberLab, groupNumberSem, weekNumber);
+function filterSubjects(groupNumberLab = getGroupNumberLab(), groupNumberSem = getGroupNumberSem(), isWeekNumberEven = getIsWeekNumberEven()) {
+    let filteredSubjects = getFilteredSubjects(groupNumberLab, groupNumberSem, isWeekNumberEven);
     filteredSubjects = Array.from(filteredSubjects).map((td) => td.parentElement);
 
     clearBGColor();
@@ -126,7 +171,7 @@ function createChooseWeekSelect() {
     newOptionElement = createDOMElement('option', { value: 'all', textContent: 'всяка' });
     newSelectElement.appendChild(newOptionElement);
 
-    newSelectElement.selectedIndex = getWeekNumber() % 2;
+    newSelectElement.selectedIndex = getIsWeekNumberEven();
 
     newSelectElement.addEventListener('change', (e) => {
         filterSubjects(labSelectElement.selectedIndex + 1
@@ -152,7 +197,7 @@ function changeBGColor(elements, color) {
     });
 }
 
-function getFilteredSubjects(groupIndexLab, groupIndexSem, weekNumber) {
+function getFilteredSubjects(groupIndexLab, groupIndexSem, isWeekNumberEven) {
     if (!(groupIndexLab >= 1 && groupIndexLab <= 3))
         throw new Error('Wrong parameters received.\n groupIndexLab should be (>= 1 && <= 3), groupIndexSem should be (1 || 2)');
 
@@ -166,18 +211,24 @@ function getFilteredSubjects(groupIndexLab, groupIndexSem, weekNumber) {
     // Filter by Group
     let filteredSubjects = Array.from(tdElements)
         .filter((td) =>
-            td.innerHTML === '&nbsp;'
-            || td.innerText === groupIndexLab + ' лаб'
-            || td.innerText === groupIndexSem + ' сем'
+            td.innerHTML === ALL_GROUPS_SELECT_TEXT
+            || td.innerText === groupIndexLab + ' ' + LAB_GROUP_SELECT_TEXT
+            || td.innerText === groupIndexSem + ' ' + SEM_GROUP_SELECT_TEXT
         );
 
+    // // Filter by Week ( old way using weekNumber )
+    // if (weekNumber > -1) {
+    //     filteredSubjects = filteredSubjects.filter((td) =>
+    //         td.previousElementSibling.innerText === ALL_WEEKS_SELECT_TEXT
+    //         || td.previousElementSibling.innerText === (isWeekNumberEven ? EVEN_WEEK_SELECT_TEXT : ODD_WEEK_SELECT_TEXT)
+    //     );
+    // }
+
     // Filter by Week
-    if (weekNumber > -1) {
-        filteredSubjects = filteredSubjects.filter((td) =>
-            td.previousElementSibling.innerText === 'всяка'
-            || td.previousElementSibling.innerText === (weekNumber % 2 ? '2,4' : '1,3')
-        );
-    }
+    filteredSubjects = filteredSubjects.filter((td) =>
+        td.previousElementSibling.innerText === ALL_WEEKS_SELECT_TEXT
+        || td.previousElementSibling.innerText === (isWeekNumberEven ? EVEN_WEEK_SELECT_TEXT : ODD_WEEK_SELECT_TEXT)
+    );
 
     return filteredSubjects;
 }
@@ -198,38 +249,11 @@ function getGroupNumberSem(groupNumberSem) {
 }
 
 function getSemesterSeason() {
-    const date = new Date();
-    const day = date.getDate();
-    const month = date.getMonth() + 1; // January = 1 (0), December = 12 (11)
+    const day = TODAY_AS_DATE.getDate();
+    const month = TODAY_AS_DATE.getMonth() + 1; // January = 1 (0), December = 12 (11)
 
-    // Winter semester 27.09 - 13.02
-    // Summer semester 14.02 - 26.06
-    const semesters = {
-        // {day}.{month}
-        [WINTER_INDEX]: {
-            start: {
-                day: 12,
-                month: 9
-            },
-            end: {
-                day: 13,
-                month: 02
-            }
-        },
-        [SUMMER_INDEX]: {
-            start: {
-                day: 14,
-                month: 2
-            },
-            end: {
-                day: 26,
-                month: 06
-            }
-        }
-    }
-
-    for (let semesterName in semesters) {
-        semester = semesters[semesterName];
+    for (let semesterName in SEMESTERS) {
+        semester = SEMESTERS[semesterName];
 
         if (month > semester.start.month || month < semester.end.month)
             return semesterName;
@@ -247,19 +271,28 @@ function getSemesterSeason() {
     throw new Error(`Could not get semester season. Today is not in semester range.`);
 }
 
-function getWeekNumber() {
-    const currentDate = new Date();
-    const oneJan = new Date(currentDate.getFullYear(), 0, 1);
+function getIsWeekNumberEven() {
+    const firstOfJan = new Date(TODAY_AS_DATE.getFullYear(), 0, 1);
 
-    let daysToEqualizeWeek = oneJan.getDay() - 1;
+    let daysToEqualizeWeek = firstOfJan.getDay() - 1;
     if (daysToEqualizeWeek === SUNDAY_DATE_NUMBER) {
         daysToEqualizeWeek = SUNDAY_NUMBER - 1;
     }
 
-    const absoluteDayInTheYear = Math.floor((currentDate - oneJan) / MS_PER_DAY);
+    // const absoluteDayInTheYear = Math.floor((TODAY_AS_DATE - firstOfJan) / MS_PER_DAY);
+    // const weekNumber = Math.floor((absoluteDayInTheYear + daysToEqualizeWeek) / 7);
+
+    // FIND ME , TO DO , DELETE , FIX IT (DELETE ABOVE AFTER FIX)
+    // Get week number starting from semester start instead of firstOfJan
+    // absoluteDayFromStartSemesterDate - const new name
+    const absoluteDayInTheYear = Math.floor((TODAY_AS_DATE - firstOfJan) / MS_PER_DAY);
     const weekNumber = Math.floor((absoluteDayInTheYear + daysToEqualizeWeek) / 7);
 
-    return weekNumber;
+    if(!INVERT_WEEK_NUMBER_RESULT){
+        return weekNumber % 2;
+    } else {
+        return !(weekNumber % 2);
+    }
 }
 
 function createDOMElement(tagName, options) {
@@ -271,6 +304,7 @@ function createDOMElement(tagName, options) {
     return newOptionElement;
 }
 
+// Was used in first or second semester.
 // function changeSchoolSubject(rowId, cellId, newData) {
 //     const trElement = document.querySelector(`${trSelector}:nth-of-type(${rowId + 1})`);
 
