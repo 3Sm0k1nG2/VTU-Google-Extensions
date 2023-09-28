@@ -1,3 +1,5 @@
+const SEMESTER_PANEL_ID = 'ContentPlaceHolder2_Panel7';
+
 const URL = "https://est.uni-vt.bg/student/spr/grzan.aspx";
 const SUBJECTS_BUTTON_LABEL = 'График на занятията';
 const ERR_MSG =
@@ -14,8 +16,19 @@ if (window.location.href !== URL) {
 }
 
 function main() {
-    const FILENAME = 'subjects.txt';
+    let fetchButton = document.createElement('button');
+    appendElementToDiv(fetchButton);
 
+    fetchButton.textContent = "Изтегли часовете"
+    fetchButton.addEventListener('click', () => {
+        const FILENAME = 'subjects.txt';
+
+        let data = extractData();
+        saveAs(data, FILENAME);
+    })
+}
+
+function extractData(){
     const TABLE_ID = '#ContentPlaceHolder2_gv_grzan';
     const TBODY_SELECTOR = TABLE_ID + '>tbody';
     const TROW_SELECTOR = TBODY_SELECTOR + '>tr';
@@ -37,7 +50,7 @@ function main() {
     const subjects = ROW_SUBJECTS_ELEMENTS;
     subjects.forEach(s => console.log(data += s.innerText + '\n'));
 
-    saveAs(data, FILENAME);
+    return data;
 }
 
 function saveAs(data, filename) {
@@ -45,4 +58,12 @@ function saveAs(data, filename) {
     a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
     a.download = filename;
     a.click();
+}
+
+function appendElementToDiv(buttonElement) {
+    const divElement = document.getElementById(SEMESTER_PANEL_ID).children[0];
+
+    let lastChildElement = divElement.children[divElement.children.length - 1];
+    divElement.appendChild(buttonElement);
+    divElement.appendChild(lastChildElement);
 }
