@@ -48,8 +48,8 @@ const SUMMER_SEMESTER_KEY = 'summer';
 
 /*
 Semesters
- Winter semester 19.09 - 07.02
- Summer semester 20.02 - 03.06
+ Winter semester 02.10 - 20.01
+ Summer semester 19.02 - 01.06
  {day}.{month}
 // Set ranges to have offset one week in start_date and end_date
 */
