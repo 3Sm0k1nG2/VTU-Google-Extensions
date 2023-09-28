@@ -1,0 +1,12 @@
+{
+    "name": "est.uni-vt.bg Fetch Subjects to File Extension",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "description": "START| 11:42AM 19-Sep-2022",
+    "content_scripts": [
+        {
+            "js": ["FetchSubjectsToFile.js"],
+            "matches": ["*://est.uni-vt.bg/student/spr/grzan.aspx"]
+        }
+    ]
+}
