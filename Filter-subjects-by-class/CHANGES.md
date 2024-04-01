@@ -1,3 +1,7 @@
+v0.0.4
+Fixed: Monday was on the previous week schedule. (February probably messed it up. year2024)
+Reverse manifest.json description update-log direction. (stack -> queue)
+
 v0.0.3
 Create CHANGES.md.
 

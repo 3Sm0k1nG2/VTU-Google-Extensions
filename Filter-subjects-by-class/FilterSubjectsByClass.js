@@ -77,7 +77,7 @@ const SEMESTERS = {
 }
 
 const TODAY_AS_DATE = new Date();
-const INVERT_WEEK_NUMBER_RESULT = true;
+const INVERT_WEEK_NUMBER_RESULT = false;
 
 // Main
 // debugger;
@@ -274,7 +274,7 @@ function getSemesterSeason() {
 function getIsWeekNumberEven() {
     const firstOfJan = new Date(TODAY_AS_DATE.getFullYear(), 0, 1);
 
-    let daysToEqualizeWeek = firstOfJan.getDay() - 1;
+    let daysToEqualizeWeek = firstOfJan.getDay() - 2;
     if (daysToEqualizeWeek === SUNDAY_DATE_NUMBER) {
         daysToEqualizeWeek = SUNDAY_NUMBER - 1;
     }
