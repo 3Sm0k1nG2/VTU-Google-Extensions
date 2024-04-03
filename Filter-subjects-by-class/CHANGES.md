@@ -1,3 +1,8 @@
+v0.0.5
+Update INVERT_WEEK_NUMBER_RESULT.
+Fixed this year days offset to equalize week.
+Remove unnecessary code.
+
 v0.0.4
 Fixed: Monday was on the previous week schedule. (February probably messed it up. year2024)
 Reverse manifest.json description update-log direction. (stack -> queue)

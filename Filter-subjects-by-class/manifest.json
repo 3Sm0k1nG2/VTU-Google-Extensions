@@ -1,8 +1,8 @@
 {
     "name": "est.uni-vt.bg Filtering Extension",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "manifest_version": 3,
-    "description": "0.0.4v| 23:38:45PM 01-Apr-2024\nUPDATE| 09:36:20PM 28-Sep-2023\nUPDATE| 10:20PM 21-Sep-2022\nSTART| 11:42AM 23-Feb-2022",
+    "description": "0.0.5v| 09:39:30M 03-Apr-2024\n0.0.4v| 23:38:45PM 01-Apr-2024\nUPDATE| 09:36:20PM 28-Sep-2023\nUPDATE| 10:20PM 21-Sep-2022\nSTART| 11:42AM 23-Feb-2022",
     "content_scripts": [
         {
             "js": ["FilterSubjectsByClass.js"],
