@@ -32,6 +32,7 @@ const DOCUMENT_READY_STATE_IS_LOADING = 'loading';
 const SUNDAY_DATE_NUMBER = 0;
 const SUNDAY_NUMBER = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000; // hours, minutes, seconds, miliseconds 
+const CURRENT_YEAR_DAY_OFFSET = 0;
 
 //// getFilteredSubjects()
 const ALL_GROUPS_SELECT_TEXT = '&nbsp;';
@@ -274,7 +275,7 @@ function getSemesterSeason() {
 function getIsWeekNumberEven() {
     const firstOfJan = new Date(TODAY_AS_DATE.getFullYear(), 0, 1);
 
-    let daysToEqualizeWeek = firstOfJan.getDay() - 2;
+    let daysToEqualizeWeek = (firstOfJan.getDay() - 1) + CURRENT_YEAR_DAY_OFFSET; //firstOfJan.getDay()=1 => firstOfJan.getDay()-1=0; The current year starts at Monday (1st January = Monday);
 
     // const absoluteDayInTheYear = Math.floor((TODAY_AS_DATE - firstOfJan) / MS_PER_DAY);
     // const weekNumber = Math.floor((absoluteDayInTheYear + daysToEqualizeWeek) / 7);
