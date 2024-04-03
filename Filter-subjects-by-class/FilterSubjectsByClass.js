@@ -275,9 +275,6 @@ function getIsWeekNumberEven() {
     const firstOfJan = new Date(TODAY_AS_DATE.getFullYear(), 0, 1);
 
     let daysToEqualizeWeek = firstOfJan.getDay() - 2;
-    if (daysToEqualizeWeek === SUNDAY_DATE_NUMBER) {
-        daysToEqualizeWeek = SUNDAY_NUMBER - 1;
-    }
 
     // const absoluteDayInTheYear = Math.floor((TODAY_AS_DATE - firstOfJan) / MS_PER_DAY);
     // const weekNumber = Math.floor((absoluteDayInTheYear + daysToEqualizeWeek) / 7);
