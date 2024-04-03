@@ -78,7 +78,7 @@ const SEMESTERS = {
 }
 
 const TODAY_AS_DATE = new Date();
-const INVERT_WEEK_NUMBER_RESULT = false;
+const INVERT_WEEK_NUMBER_RESULT = true;
 
 // Main
 // debugger;
@@ -286,10 +286,10 @@ function getIsWeekNumberEven() {
     const absoluteDayInTheYear = Math.floor((TODAY_AS_DATE - firstOfJan) / MS_PER_DAY);
     const weekNumber = Math.floor((absoluteDayInTheYear + daysToEqualizeWeek) / 7);
 
-    if(!INVERT_WEEK_NUMBER_RESULT){
-        return weekNumber % 2;
-    } else {
+    if(INVERT_WEEK_NUMBER_RESULT){
         return !(weekNumber % 2);
+    } else {
+        return weekNumber % 2;
     }
 }
 
